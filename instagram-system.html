@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram System – Mein Veränderungsweg</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #B8935A;
+  --gold-light: #D4AA72;
+  --gold-pale: #E8D5B5;
+  --cream: #F5EFE0;
+  --cream-dark: #EDE4CF;
+  --brown: #5C4033;
+  --brown-light: #7A5C48;
+  --text: #2E1F14;
+  --text-muted: #8B6E5A;
+  --white: #FDFAF4;
+  --green: #4A7C59;
+  --green-light: #E8F4EC;
+  --red-light: #FFF0EE;
+  --red: #C0392B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+/* NAV TABS */
+.nav { background: var(--brown); display: flex; overflow-x: auto; }
+.nav-tab {
+  padding: 0.9rem 1.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-pale);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.nav-tab.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, var(--brown) 0%, #3D2519 100%);
+  padding: 1.8rem 1.5rem 1.5rem;
+  text-align: center;
+}
+.logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; color: var(--gold-pale); letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+.logo em { color: var(--gold); font-style: italic; }
+header h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 300; color: var(--cream); line-height: 1.2; }
+header h1 em { color: var(--gold-light); font-style: italic; }
+header p { font-size: 0.82rem; color: var(--gold-pale); margin-top: 0.4rem; font-weight: 300; }
+
+/* PAGES */
+.page { display: none; max-width: 680px; margin: 0 auto; padding: 1.5rem 1.2rem 5rem; }
+.page.active { display: block; }
+
+/* CARD */
+.card { background: var(--white); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.2rem; border: 1px solid var(--cream-dark); box-shadow: 0 3px 16px rgba(92,64,51,0.06); }
+.card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 400; color: var(--brown); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+.step { background: var(--gold); color: var(--white); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Jost', sans-serif; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+
+label { display: block; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; margin-top: 0.9rem; }
+label:first-of-type { margin-top: 0; }
+select, textarea, input[type="text"] { width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid var(--cream-dark); border-radius: 10px; font-family: 'Jost', sans-serif; font-size: 0.86rem; color: var(--text); background: var(--cream); transition: border-color 0.2s; appearance: none; }
+select:focus, textarea:focus, input:focus { outline: none; border-color: var(--gold); background: var(--white); }
+textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+.select-wrap { position: relative; }
+.select-wrap::after { content: '↓'; position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--gold); pointer-events: none; }
+
+.pill-group { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.pill { padding: 0.4rem 0.9rem; border: 1.5px solid var(--cream-dark); border-radius: 20px; font-size: 0.8rem; font-family: 'Jost', sans-serif; color: var(--brown-light); background: var(--cream); cursor: pointer; transition: all 0.2s; }
+.pill.active { background: var(--gold); border-color: var(--gold); color: var(--white); font-weight: 500; }
+
+.btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--gold) 0%, var(--brown-light) 100%); color: var(--white); border: none; border-radius: 12px; font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; letter-spacing: 0.05em; cursor: pointer; transition: transform 0.2s, opacity 0.2s; margin-top: 0.5rem; }
+.btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn-secondary { padding: 0.6rem 1.1rem; border: 1.5px solid var(--gold); border-radius: 9px; background: transparent; color: var(--gold); font-family: 'Jost', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-secondary:hover { background: var(--gold); color: var(--white); }
+.btn-secondary.copied { background: var(--gold); color: var(--white); }
+.btn-ghost { padding: 0.6rem 1rem; border: 1.5px solid var(--cream-dark); border-radius: 9px; background: var(--cream); color: var(--brown-light); font-family: 'Jost', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+.loading { display: none; text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.88rem; }
+.loading-dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); margin: 0 3px; animation: bounce 1.2s ease-in-out infinite; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1} }
+
+.divider { text-align: center; position: relative; margin: 1.2rem 0; }
+.divider::before { content:''; position:absolute; left:0;right:0;top:50%; height:1px; background:var(--cream-dark); }
+.divider span { background:var(--cream); padding:0 0.7rem; position:relative; color:var(--gold); }
+
+/* HOOK CARDS */
+.hook-card { background: var(--white); border: 1.5px solid var(--cream-dark); border-radius: 13px; padding: 1.3rem; margin-bottom: 1rem; transition: border-color 0.2s, box-shadow 0.2s; }
+.hook-card:hover { border-color: var(--gold-pale); box-shadow: 0 4px 16px rgba(184,147,90,0.1); }
+.hook-type { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+.hook-text { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--text); line-height: 1.6; margin-bottom: 0.7rem; white-space: pre-wrap; }
+.caption-full { font-size: 0.83rem; color: var(--text-muted); line-height: 1.75; border-top: 1px solid var(--cream-dark); padding-top: 0.7rem; white-space: pre-wrap; }
+.hashtags { font-size: 0.78rem; color: var(--gold); margin-top: 0.5rem; line-height: 1.8; }
+.hook-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+
+/* CHECKLISTE */
+.check-item { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.7rem 0; border-bottom: 1px solid var(--cream-dark); }
+.check-item:last-child { border-bottom: none; }
+.check-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
+.check-icon.ok { background: var(--green-light); color: var(--green); }
+.check-icon.warn { background: #FFF8E6; color: #B8860B; }
+.check-icon.fail { background: var(--red-light); color: var(--red); }
+.check-label { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+.check-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+.check-score { display: flex; align-items: center; gap: 0.7rem; padding: 0.8rem 1rem; background: var(--cream); border-radius: 10px; margin-bottom: 1rem; }
+.score-bar { flex: 1; height: 6px; background: var(--cream-dark); border-radius: 3px; overflow: hidden; }
+.score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--gold), var(--green)); transition: width 0.8s ease; }
+.score-num { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--brown); font-weight: 600; min-width: 40px; text-align: right; }
+
+/* POSTING PLAN */
+.week-grid { display: grid; gap: 0.7rem; }
+.day-card { background: var(--white); border: 1.5px solid var(--cream-dark); border-radius: 12px; overflow: hidden; }
+.day-header { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 1rem; background: var(--cream); border-bottom: 1px solid var(--cream-dark); cursor: pointer; }
+.day-name { font-weight: 600; font-size: 0.85rem; color: var(--brown); }
+.day-format { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+.day-content { padding: 0.9rem 1rem; display: none; }
+.day-content.open { display: block; }
+.day-topic { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--text); margin-bottom: 0.4rem; }
+.day-hook { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.7rem; }
+.day-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.rest-day { opacity: 0.4; }
+.rest-day .day-header { cursor: default; }
+
+/* CANVA SECTION */
+.canva-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+.canva-btn { padding: 1rem; border: 1.5px solid var(--cream-dark); border-radius: 12px; background: var(--white); text-align: center; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.canva-btn:hover { border-color: var(--gold); box-shadow: 0 3px 12px rgba(184,147,90,0.12); }
+.canva-icon { font-size: 1.6rem; }
+.canva-label { font-size: 0.78rem; font-weight: 600; color: var(--brown); letter-spacing: 0.05em; }
+.canva-sub { font-size: 0.7rem; color: var(--text-muted); }
+
+.tip-box { background: linear-gradient(135deg, var(--brown) 0%, #3D2519 100%); border-radius: 13px; padding: 1.2rem 1.4rem; color: var(--gold-pale); font-size: 0.83rem; line-height: 1.7; margin-top: 0.8rem; }
+.tip-box strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--gold-light); margin-bottom: 0.3rem; }
+
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--cream-dark); display: flex; z-index: 100; box-shadow: 0 -4px 20px rgba(92,64,51,0.08); }
+.bnav-item { flex: 1; padding: 0.7rem 0.3rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+.bnav-icon { font-size: 1.3rem; display: block; }
+.bnav-label { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-top: 0.1rem; }
+.bnav-item.active .bnav-label { color: var(--gold); }
+.bnav-item.active .bnav-icon { filter: sepia(1) saturate(2) hue-rotate(0deg); }
+
+.badge-new { background: var(--gold); color: white; font-size: 0.55rem; padding: 1px 5px; border-radius: 8px; margin-left: 3px; vertical-align: middle; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Mein <em>Veränderungsweg</em></div>
+  <h1>Instagram <em>System</em></h1>
+  <p>Hooks · Posting-Plan · Viral-Check · Canva</p>
+</header>
+
+<!-- PAGE 1: HOOK GENERATOR -->
+<div class="page active" id="page-hooks">
+  <div class="card" style="margin-top:1.2rem">
+    <div class="card-title"><span class="step">1</span> Kurs & Thema</div>
+    <label>Kurs wählen</label>
+    <div class="select-wrap">
+      <select id="kurs">
+        <option value="">– Kurs wählen –</option>
+        <option value="Glaubenssätze & innere Überzeugungen">Glaubenssätze & innere Überzeugungen</option>
+        <option value="Innerer Kritiker">Innerer Kritiker</option>
+        <option value="Was mein Körper mir sagen will">Was mein Körper mir sagen will</option>
+        <option value="Selbstvertrauen stärken">Selbstvertrauen stärken</option>
+        <option value="Lebensrad & Orientierung">Lebensrad & Orientierung</option>
+        <option value="Veränderung & Neuanfang nach 50">Veränderung & Neuanfang nach 50</option>
+        <option value="Selbstmitgefühl & innere Stärke">Selbstmitgefühl & innere Stärke</option>
+      </select>
+    </div>
+    <label>Eigene Kernbotschaft (optional)</label>
+    <textarea id="thema" placeholder='z.B. "Es ist nie zu spät, sich selbst neu kennenzulernen."'></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step">2</span> Format</div>
+    <div class="pill-group" id="format-pills">
+      <button class="pill active" data-val="Reel">🎬 Reel</button>
+      <button class="pill" data-val="Karussell">📑 Karussell</button>
+      <button class="pill" data-val="Bild-Post">🖼 Bild-Post</button>
+      <button class="pill" data-val="Story">📲 Story</button>
+    </div>
+    <label style="margin-top:1rem">Ziel</label>
+    <div class="pill-group" id="ziel-pills">
+      <button class="pill active" data-val="Reichweite & neue Zielgruppe">Reichweite</button>
+      <button class="pill" data-val="Vertrauen & Tiefe">Vertrauen</button>
+      <button class="pill" data-val="Kurs-Interesse wecken">Kurs bewerben</button>
+      <button class="pill" data-val="Community & Interaktion">Interaktion</button>
+    </div>
+    <label style="margin-top:1rem">Ton</label>
+    <div class="pill-group" id="ton-pills">
+      <button class="pill active" data-val="warm & einfühlsam">Warm</button>
+      <button class="pill" data-val="direkt & wachstumsfördernd">Direkt</button>
+      <button class="pill" data-val="nachdenklich & tiefgründig">Tiefgründig</button>
+      <button class="pill" data-val="ehrlich & persönlich">Persönlich</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="generateBtn" onclick="generateHooks()">✦ Hooks & Captions generieren</button>
+
+  <div class="loading" id="loading-hooks">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <p style="margin-top:0.7rem;font-size:0.85rem">Deine Hooks entstehen …</p>
+  </div>
+
+  <div id="hook-results" style="display:none">
+    <div class="divider"><span>✦</span></div>
+    <div id="hookCards"></div>
+    <div style="display:flex;gap:0.6rem;margin-top:0.3rem">
+      <button class="btn-ghost" style="flex:1" onclick="generateHooks()">↺ Neue Varianten</button>
+      <button class="btn-ghost" style="flex:1" onclick="goToCheck()">→ Viral-Check</button>
+    </div>
+    <div class="tip-box" style="margin-top:1rem">
+      <strong>Algorithmus 2026</strong>
+      Die ersten 3 Sekunden entscheiden. DM-Shares zählen mehr als Likes. Nutze den Hook als Text-Overlay im Reel.
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: POSTING PLAN -->
+<div class="page" id="page-plan">
+  <div class="card" style="margin-top:1.2rem">
+    <div class="card-title">⚡ Wochenplan generieren</div>
+    <label>Posts pro Woche</label>
+    <div class="pill-group" id="freq-pills">
+      <button class="pill" data-val="3">3×</button>
+      <button class="pill active" data-val="4">4×</button>
+      <button class="pill" data-val="5">5×</button>
+    </div>
+    <label style="margin-top:1rem">Aktuelle Kurse (Schwerpunkt)</label>
+    <div class="pill-group" id="kurs-pills">
+      <button class="pill active" data-val="Glaubenssätze">Glaubenssätze</button>
+      <button class="pill" data-val="Innerer Kritiker">Innerer Kritiker</button>
+      <button class="pill active" data-val="Körper & Signale">Körper</button>
+      <button class="pill" data-val="Selbstvertrauen">Selbstvertrauen</button>
+      <button class="pill" data-val="Neuanfang 50+">Neuanfang 50+</button>
+    </div>
+    <button class="btn-primary" style="margin-top:1rem" onclick="generatePlan()">📅 Wochenplan erstellen</button>
+  </div>
+
+  <div class="loading" id="loading-plan">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <p style="margin-top:0.7rem;font-size:0.85rem">Plan wird erstellt …</p>
+  </div>
+
+  <div id="plan-results" style="display:none">
+    <div class="divider"><span>✦</span></div>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem;text-align:center">Tippe auf einen Tag für Details & fertige Caption</p>
+    <div class="week-grid" id="weekGrid"></div>
+    <div class="tip-box" style="margin-top:1rem">
+      <strong>Beste Posting-Zeiten für Frauen 50+</strong>
+      Di & Do 7–9 Uhr · Mi & Fr 11–13 Uhr · Reels performen 24–48h nach Veröffentlichung am stärksten.
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: VIRAL CHECK -->
+<div class="page" id="page-check">
+  <div class="card" style="margin-top:1.2rem">
+    <div class="card-title">🔍 Viral-Check</div>
+    <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Füge deinen Hook oder deine Caption ein — ich prüfe, ob sie viral-tauglich ist.</p>
+    <label>Dein Hook / Caption</label>
+    <textarea id="check-input" rows="5" placeholder="Hook oder Caption hier einfügen …"></textarea>
+    <label style="margin-top:0.8rem">Format</label>
+    <div class="pill-group" id="check-format-pills">
+      <button class="pill active" data-val="Reel">Reel</button>
+      <button class="pill" data-val="Karussell">Karussell</button>
+      <button class="pill" data-val="Bild-Post">Bild-Post</button>
+    </div>
+    <button class="btn-primary" style="margin-top:1rem" onclick="runCheck()">✓ Jetzt prüfen</button>
+  </div>
+
+  <div class="loading" id="loading-check">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <p style="margin-top:0.7rem;font-size:0.85rem">Analysiere …</p>
+  </div>
+
+  <div id="check-results" style="display:none">
+    <div class="divider"><span>✦</span></div>
+    <div class="card">
+      <div class="check-score">
+        <div style="font-size:0.78rem;font-weight:500;color:var(--text-muted);flex-shrink:0">Viral-Score</div>
+        <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+        <div class="score-num" id="scoreNum">–</div>
+      </div>
+      <div id="checkItems"></div>
+    </div>
+    <div id="check-suggestion" style="display:none" class="card">
+      <div class="card-title" style="font-size:1.05rem">✨ Verbesserte Version</div>
+      <div id="suggestion-text" style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;line-height:1.65;color:var(--text);white-space:pre-wrap"></div>
+      <div style="margin-top:0.8rem">
+        <button class="btn-secondary" onclick="copySuggestion()">Kopieren</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: CANVA & WORKFLOW -->
+<div class="page" id="page-canva">
+  <div class="card" style="margin-top:1.2rem">
+    <div class="card-title">🎨 Direkt in Canva öffnen</div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Wähle dein Format — Canva öffnet sich mit den richtigen Maßen.</p>
+    <div class="canva-grid">
+      <a class="canva-btn" href="https://www.canva.com/design/create?type=instagram_reel" target="_blank">
+        <span class="canva-icon">🎬</span>
+        <span class="canva-label">Reel</span>
+        <span class="canva-sub">1080 × 1920 px</span>
+      </a>
+      <a class="canva-btn" href="https://www.canva.com/design/create?type=instagram_post" target="_blank">
+        <span class="canva-icon">📑</span>
+        <span class="canva-label">Karussell</span>
+        <span class="canva-sub">1080 × 1080 px</span>
+      </a>
+      <a class="canva-btn" href="https://www.canva.com/design/create?type=instagram_post" target="_blank">
+        <span class="canva-icon">🖼</span>
+        <span class="canva-label">Bild-Post</span>
+        <span class="canva-sub">1080 × 1080 px</span>
+      </a>
+      <a class="canva-btn" href="https://www.canva.com/design/create?type=instagram_story" target="_blank">
+        <span class="canva-icon">📲</span>
+        <span class="canva-label">Story</span>
+        <span class="canva-sub">1080 × 1920 px</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Mein Posting-Workflow</div>
+    <div id="workflow-steps">
+      <div class="check-item">
+        <div class="check-icon ok">1</div>
+        <div><div class="check-label">Hook generieren</div><div class="check-desc">Hook Generator → Format & Thema wählen → Hooks generieren → besten kopieren</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok">2</div>
+        <div><div class="check-label">Viral-Check durchführen</div><div class="check-desc">Hook einfügen → Score prüfen → ggf. verbesserte Version nehmen</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok">3</div>
+        <div><div class="check-label">In Canva gestalten</div><div class="check-desc">Format öffnen → Hook als Text-Overlay einfügen → Brand-Farben Gold & Creme</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok">4</div>
+        <div><div class="check-label">Caption & Hashtags kopieren</div><div class="check-desc">Fertige Caption aus dem Generator → direkt in Instagram einfügen</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok">5</div>
+        <div><div class="check-label">Zur besten Zeit posten</div><div class="check-desc">Di/Do 7–9 Uhr · Mi/Fr 11–13 Uhr · Erste 60 Min: auf Kommentare antworten!</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💡 KI-Schnelltexte</div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Fertige Prompts für ChatGPT / Claude — einfach kopieren und nutzen.</p>
+
+    <div id="prompt-cards">
+      <div class="hook-card">
+        <div class="hook-type">Prompt: Reel-Skript</div>
+        <div class="hook-text" style="font-size:0.85rem;font-family:'Jost',sans-serif">Schreib mir ein 30-Sekunden-Reel-Skript für Instagram. Zielgruppe: Frauen 50+, Thema: [THEMA]. Ton: warm, ehrlich, ohne Heilversprechen. Struktur: Hook (3 Sek.) → Problem benennen → Aha-Moment → weicher CTA. Max. 80 Wörter.</div>
+        <div class="hook-actions"><button class="btn-secondary" onclick="copyThis(this, 'Schreib mir ein 30-Sekunden-Reel-Skript für Instagram. Zielgruppe: Frauen 50+, Thema: [THEMA]. Ton: warm, ehrlich, ohne Heilversprechen. Struktur: Hook (3 Sek.) → Problem benennen → Aha-Moment → weicher CTA. Max. 80 Wörter.')">Kopieren</button></div>
+      </div>
+      <div class="hook-card">
+        <div class="hook-type">Prompt: Karussell-Slides</div>
+        <div class="hook-text" style="font-size:0.85rem;font-family:'Jost',sans-serif">Erstelle 7 Karussell-Slides für Instagram. Thema: [THEMA]. Slide 1: Hook-Frage. Slides 2–6: je ein Tipp/Erkenntnis (max. 15 Wörter). Slide 7: sanfte Handlungsaufforderung. Zielgruppe: Frauen 50+, Coaching-Kontext.</div>
+        <div class="hook-actions"><button class="btn-secondary" onclick="copyThis(this, 'Erstelle 7 Karussell-Slides für Instagram. Thema: [THEMA]. Slide 1: Hook-Frage. Slides 2–6: je ein Tipp/Erkenntnis (max. 15 Wörter). Slide 7: sanfte Handlungsaufforderung. Zielgruppe: Frauen 50+, Coaching-Kontext.')">Kopieren</button></div>
+      </div>
+      <div class="hook-card">
+        <div class="hook-type">Prompt: Caption optimieren</div>
+        <div class="hook-text" style="font-size:0.85rem;font-family:'Jost',sans-serif">Optimiere diese Instagram-Caption für den Algorithmus 2026: [CAPTION]. Anforderungen: Keyword-reich (kein Hashtag-Spam), max. 5 Hashtags am Ende, DM-Share-Anreiz einbauen, Frage am Ende für Kommentare. Ton: authentisch, Frauen 50+.</div>
+        <div class="hook-actions"><button class="btn-secondary" onclick="copyThis(this, 'Optimiere diese Instagram-Caption für den Algorithmus 2026: [CAPTION]. Anforderungen: Keyword-reich (kein Hashtag-Spam), max. 5 Hashtags am Ende, DM-Share-Anreiz einbauen, Frage am Ende für Kommentare. Ton: authentisch, Frauen 50+.')">Kopieren</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5: REEL SKRIPT + MUSIK -->
+<div class="page" id="page-musik">
+
+  <!-- SKRIPT GENERATOR -->
+  <div class="card" style="margin-top:1.2rem">
+    <div class="card-title">🎙 Reel-Skript generieren</div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Fertig zum Sprechen — mit Timing, Pausen und Hinweisen für das Visuelle.</p>
+
+    <label>Thema / Hook</label>
+    <textarea id="skript-thema" rows="2" placeholder='z.B. "Warum Selbstkritik uns nicht voranbringt" oder Hook direkt einfügen'></textarea>
+
+    <label style="margin-top:0.9rem">Reel-Länge</label>
+    <div class="pill-group" id="laenge-pills">
+      <button class="pill active" data-val="15">⚡ 15 Sek.</button>
+      <button class="pill" data-val="30">30 Sek.</button>
+      <button class="pill" data-val="60">60 Sek.</button>
+      <button class="pill" data-val="90">90 Sek.</button>
+    </div>
+
+    <label style="margin-top:0.9rem">Sprechstil</label>
+    <div class="pill-group" id="stil-pills">
+      <button class="pill active" data-val="ruhig & einladend">Ruhig & einladend</button>
+      <button class="pill" data-val="direkt & energetisch">Direkt & energetisch</button>
+      <button class="pill" data-val="persönlich & reflektiv">Persönlich & reflektiv</button>
+    </div>
+
+    <button class="btn-primary" style="margin-top:1rem" id="skriptBtn" onclick="generateSkript()">🎙 Skript erstellen</button>
+  </div>
+
+  <div class="loading" id="loading-skript">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <p style="margin-top:0.7rem;font-size:0.85rem">Skript wird geschrieben …</p>
+  </div>
+
+  <div id="skript-results" style="display:none">
+    <div class="divider"><span>✦</span></div>
+    <div class="card">
+      <div class="card-title" style="font-size:1.05rem">📄 Dein Skript</div>
+      <div id="skript-text" style="font-size:0.88rem;line-height:1.9;color:var(--text);white-space:pre-wrap;font-family:'Jost',sans-serif"></div>
+      <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap">
+        <button class="btn-secondary" id="skript-copy-btn" onclick="copySkript()">Skript kopieren</button>
+        <button class="btn-ghost" onclick="generateSkript()">↺ Neue Version</button>
+      </div>
+    </div>
+    <div id="musik-empfehlung" style="display:none" class="card">
+      <div class="card-title" style="font-size:1.05rem">🎵 Passende Musik dazu</div>
+      <div id="musik-passend"></div>
+    </div>
+  </div>
+
+  <!-- MUSIK BIBLIOTHEK -->
+  <div class="divider" style="margin-top:1.5rem"><span>♪</span></div>
+  <div class="card">
+    <div class="card-title">🎵 Lizenzfreie Musik-Bibliothek</div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.2rem;line-height:1.6">Alle Tracks 100% lizenzfrei — kostenlos für kommerzielle Nutzung auf Instagram. Wähle eine Stimmung:</p>
+
+    <div class="pill-group" id="stimmung-pills" style="margin-bottom:1.2rem">
+      <button class="pill active" data-val="warm" onclick="filterMusik('warm')">🌿 Warm & Ruhig</button>
+      <button class="pill" data-val="inspirierend" onclick="filterMusik('inspirierend')">✨ Inspirierend</button>
+      <button class="pill" data-val="nachdenklich" onclick="filterMusik('nachdenklich')">🌙 Nachdenklich</button>
+      <button class="pill" data-val="leicht" onclick="filterMusik('leicht')">☀️ Leicht & Frisch</button>
+      <button class="pill" data-val="kraftvoll" onclick="filterMusik('kraftvoll')">🔥 Kraftvoll</button>
+    </div>
+
+    <div id="musik-liste"></div>
+
+    <div class="tip-box" style="margin-top:1rem">
+      <strong>Tipp zur Musiknutzung</strong>
+      Pixabay, Uppbeat und Mixkit: kostenlos, kein Credit nötig für Instagram. Free Music Archive: CC0-Tracks, ebenfalls frei. Bei Uppbeat einmalig kostenlos registrieren → dann unbegrenzt herunterladen.
+    </div>
+  </div>
+
+  <!-- QUELLEN -->
+  <div class="card">
+    <div class="card-title">🔗 Weitere Musikquellen</div>
+    <div id="quellen-liste">
+      <div class="check-item">
+        <div class="check-icon ok" style="font-size:1rem">🎵</div>
+        <div>
+          <div class="check-label"><a href="https://pixabay.com/music/" target="_blank" style="color:var(--gold);text-decoration:none">Pixabay Music →</a></div>
+          <div class="check-desc">Kostenlos, kein Account nötig. Sehr große Auswahl, filter nach "Meditation", "Acoustic", "Cinematic".</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok" style="font-size:1rem">🎵</div>
+        <div>
+          <div class="check-label"><a href="https://uppbeat.io/browse/music/calm" target="_blank" style="color:var(--gold);text-decoration:none">Uppbeat – Calm →</a></div>
+          <div class="check-desc">Kostenloser Account → 10 Downloads/Monat. Professionelle Qualität, ideal für Reels.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok" style="font-size:1rem">🎵</div>
+        <div>
+          <div class="check-label"><a href="https://mixkit.co/free-stock-music/" target="_blank" style="color:var(--gold);text-decoration:none">Mixkit Free Music →</a></div>
+          <div class="check-desc">Kein Account, sofort downloaden. Gut für kurze Reels (15–30 Sek.).</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok" style="font-size:1rem">🎵</div>
+        <div>
+          <div class="check-label"><a href="https://www.youtube.com/audiolibrary" target="_blank" style="color:var(--gold);text-decoration:none">YouTube Audio Library →</a></div>
+          <div class="check-desc">Googles offizielle Bibliothek. Viele Tracks explizit für Instagram & Social Media freigegeben.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon ok" style="font-size:1rem">🎵</div>
+        <div>
+          <div class="check-label"><a href="https://freemusicarchive.org/genre/Ambient/" target="_blank" style="color:var(--gold);text-decoration:none">Free Music Archive – Ambient →</a></div>
+          <div class="check-desc">CC0 & CC-BY Tracks. Perfekt für ruhige, tiefgründige Reels.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bnav-item active" onclick="showPage('hooks', this)">
+    <span class="bnav-icon">✦</span>
+    <div class="bnav-label">Hooks</div>
+  </div>
+  <div class="bnav-item" onclick="showPage('plan', this)">
+    <span class="bnav-icon">📅</span>
+    <div class="bnav-label">Wochenplan</div>
+  </div>
+  <div class="bnav-item" onclick="showPage('check', this)">
+    <span class="bnav-icon">🔍</span>
+    <div class="bnav-label">Viral-Check</div>
+  </div>
+  <div class="bnav-item" onclick="showPage('canva', this)">
+    <span class="bnav-icon">🎨</span>
+    <div class="bnav-label">Canva</div>
+  </div>
+  <div class="bnav-item" onclick="showPage('musik', this)">
+    <span class="bnav-icon">🎵</span>
+    <div class="bnav-label">Skript & Musik</div>
+  </div>
+</div>
+
+<script>
+// ── NAV ──────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+}
+function goToCheck() { showPage('check', document.querySelectorAll('.bnav-item')[2]); }
+
+// ── PILLS ─────────────────────────────────────────────
+function setupPills(id, multi=false) {
+  document.querySelectorAll('#' + id + ' .pill').forEach(p => {
+    p.addEventListener('click', () => {
+      if (!multi) document.querySelectorAll('#' + id + ' .pill').forEach(x => x.classList.remove('active'));
+      p.classList.toggle('active');
+    });
+  });
+}
+setupPills('format-pills'); setupPills('ziel-pills'); setupPills('ton-pills');
+setupPills('freq-pills'); setupPills('kurs-pills', true);
+setupPills('check-format-pills');
+setupPills('laenge-pills'); setupPills('stil-pills');
+
+function getActive(id) {
+  return [...document.querySelectorAll('#' + id + ' .pill.active')].map(p => p.dataset.val).join(', ');
+}
+
+// ── API CALL ──────────────────────────────────────────
+async function callClaude(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  const text = data.content?.find(b => b.type === 'text')?.text || '';
+  return text.replace(/```json|```/g, '').trim();
+}
+
+// ── HOOK GENERATOR ────────────────────────────────────
+async function generateHooks() {
+  const kurs = document.getElementById('kurs').value;
+  const thema = document.getElementById('thema').value.trim();
+  const topic = thema || kurs;
+  if (!topic) { alert('Bitte Kurs oder Thema eingeben.'); return; }
+  const format = getActive('format-pills');
+  const ziel = getActive('ziel-pills');
+  const ton = getActive('ton-pills');
+
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('loading-hooks').style.display = 'block';
+  document.getElementById('hook-results').style.display = 'none';
+
+  const prompt = `Du bist Instagram-Expertin für systemische Coaches. Erstelle 3 Hook-Varianten für einen Instagram-${format}.
+
+KONTEXT:
+- Thema: ${topic}
+- Ziel: ${ziel}
+- Ton: ${ton}
+- Zielgruppe: Frauen 50+, persönliche Entwicklung, Selbstvertrauen, Veränderung
+- Marke: "Mein Veränderungsweg" – systemisch, warmherzig, ressourcenorientiert
+- WICHTIG: Keine Heilversprechen (HWG), keine Therapieversprechen
+
+Erstelle 3 Hooks mit jeweils:
+- Hook (1-2 Sätze, max. 130 Zeichen, für die ersten 3 Sekunden)
+- Vollständige Caption (5-7 Sätze, keyword-reich, authentisch)
+- Hashtags (5-7 relevante, keine generischen wie #motivation)
+- CTA am Ende der Caption
+
+Hook-Typen:
+1. Identifikations-Hook ("Kennst du das…" / "Wenn du auch…")
+2. Überraschungs-Hook (kontraintuitiv, unerwartet)
+3. Frage-Hook (öffnende, ehrliche Frage die sitzt)
+
+Antworte NUR als JSON:
+{"hooks":[{"typ":"Identifikations-Hook","hook":"...","caption":"...","hashtags":"..."},{"typ":"Überraschungs-Hook","hook":"...","caption":"...","hashtags":"..."},{"typ":"Frage-Hook","hook":"...","caption":"...","hashtags":"..."}]}`;
+
+  try {
+    const raw = await callClaude(prompt);
+    const data = JSON.parse(raw);
+    renderHooks(data.hooks);
+    document.getElementById('hook-results').style.display = 'block';
+  } catch(e) {
+    alert('Fehler – bitte erneut versuchen.');
+  } finally {
+    document.getElementById('loading-hooks').style.display = 'none';
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+function renderHooks(hooks) {
+  const c = document.getElementById('hookCards');
+  c.innerHTML = '';
+  hooks.forEach(h => {
+    const fullText = h.hook + '\n\n' + h.caption + '\n\n' + h.hashtags;
+    c.innerHTML += `
+      <div class="hook-card">
+        <div class="hook-type">${h.typ}</div>
+        <div class="hook-text">${esc(h.hook)}</div>
+        <div class="caption-full">${esc(h.caption)}</div>
+        <div class="hashtags">${esc(h.hashtags)}</div>
+        <div class="hook-actions">
+          <button class="btn-secondary" onclick="copyRaw(this,'${escJs(h.hook)}')">Hook kopieren</button>
+          <button class="btn-secondary" onclick="copyRaw(this,'${escJs(fullText)}')">Alles kopieren</button>
+          <button class="btn-ghost" onclick="prefillCheck('${escJs(h.hook + ' ' + h.caption)}')">→ Prüfen</button>
+        </div>
+      </div>`;
+  });
+}
+
+// ── POSTING PLAN ──────────────────────────────────────
+async function generatePlan() {
+  const freq = parseInt(getActive('freq-pills')) || 4;
+  const kurse = getActive('kurs-pills') || 'Glaubenssätze, Selbstvertrauen';
+
+  document.getElementById('loading-plan').style.display = 'block';
+  document.getElementById('plan-results').style.display = 'none';
+
+  const prompt = `Erstelle einen Instagram-Wochenplan für eine systemische Coach (Frauen 50+, Marke "Mein Veränderungsweg").
+
+PARAMETER:
+- Posts pro Woche: ${freq}
+- Kursschwerpunkte: ${kurse}
+- Algorithmus 2026: Mix aus Reels (Reichweite), Karussells (Saves), Bild-Posts (Community)
+
+Erstelle einen Plan für Mo–So mit ${freq} aktiven Tagen.
+Pro aktivem Tag:
+- format: "Reel" / "Karussell" / "Bild-Post"  
+- thema: konkretes Unterthema (z.B. "Der innere Kritiker im Spiegel")
+- hook: fertiger Hook-Satz
+- caption_start: Anfang der Caption (2-3 Sätze)
+- uhrzeit: optimale Uhrzeit
+
+Antworte NUR als JSON:
+{"tage":[{"tag":"Montag","aktiv":true,"format":"...","thema":"...","hook":"...","caption_start":"...","uhrzeit":"..."},{"tag":"Dienstag",...},{"tag":"Mittwoch",...},{"tag":"Donnerstag",...},{"tag":"Freitag",...},{"tag":"Samstag",...},{"tag":"Sonntag",...}]}`;
+
+  try {
+    const raw = await callClaude(prompt);
+    const data = JSON.parse(raw);
+    renderPlan(data.tage);
+    document.getElementById('plan-results').style.display = 'block';
+  } catch(e) {
+    alert('Fehler – bitte erneut versuchen.');
+  } finally {
+    document.getElementById('loading-plan').style.display = 'none';
+  }
+}
+
+function renderPlan(tage) {
+  const g = document.getElementById('weekGrid');
+  g.innerHTML = '';
+  tage.forEach((t, i) => {
+    if (!t.aktiv) {
+      g.innerHTML += `<div class="day-card rest-day"><div class="day-header"><span class="day-name">${t.tag}</span><span class="day-format">Pause ☁️</span></div></div>`;
+      return;
+    }
+    const icons = {'Reel':'🎬','Karussell':'📑','Bild-Post':'🖼','Story':'📲'};
+    const icon = icons[t.format] || '📌';
+    g.innerHTML += `
+      <div class="day-card">
+        <div class="day-header" onclick="toggleDay(this)">
+          <span class="day-name">${t.tag} · ${t.uhrzeit || ''}</span>
+          <span class="day-format">${icon} ${t.format}</span>
+        </div>
+        <div class="day-content">
+          <div class="day-topic">${esc(t.thema)}</div>
+          <div class="day-hook" style="font-style:italic">"${esc(t.hook)}"</div>
+          <div class="day-hook">${esc(t.caption_start)}</div>
+          <div class="day-actions">
+            <button class="btn-secondary" onclick="copyRaw(this,'${escJs(t.hook + '\n\n' + t.caption_start)}')">Caption kopieren</button>
+            <button class="btn-ghost" onclick="prefillCheck('${escJs(t.hook)}');goToCheck()">Viral-Check</button>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function toggleDay(el) {
+  const content = el.nextElementSibling;
+  content.classList.toggle('open');
+}
+
+// ── VIRAL CHECK ───────────────────────────────────────
+async function runCheck() {
+  const text = document.getElementById('check-input').value.trim();
+  const format = getActive('check-format-pills');
+  if (!text) { alert('Bitte Text eingeben.'); return; }
+
+  document.getElementById('loading-check').style.display = 'block';
+  document.getElementById('check-results').style.display = 'none';
+
+  const prompt = `Analysiere diesen Instagram-${format}-Text auf Viral-Potenzial (2026 Algorithmus, Zielgruppe Frauen 50+):
+
+TEXT: "${text}"
+
+Bewerte diese 6 Kriterien mit "ok", "warn" oder "fail":
+1. Hook-Stärke (erste 3 Sek. / erste Zeile)
+2. Identifikationspotenzial (fühlt sich die Zielgruppe angesprochen?)
+3. DM-Share-Potenzial (würde man es weiterleiten?)
+4. Keywords & Auffindbarkeit (SEO-Wörter vorhanden?)
+5. CTA / Interaktionsimpuls (Kommentar-Aufforderung?)
+6. HWG-Konformität (keine unzulässigen Heilversprechen?)
+
+Berechne einen Score von 0–100.
+
+Falls Score < 80: Erstelle eine verbesserte Version des Textes.
+
+Antworte NUR als JSON:
+{"score":75,"kriterien":[{"name":"Hook-Stärke","status":"ok","beschreibung":"..."},{"name":"Identifikationspotenzial","status":"warn","beschreibung":"..."},{"name":"DM-Share-Potenzial","status":"fail","beschreibung":"..."},{"name":"Keywords & Auffindbarkeit","status":"ok","beschreibung":"..."},{"name":"CTA / Interaktionsimpuls","status":"warn","beschreibung":"..."},{"name":"HWG-Konformität","status":"ok","beschreibung":"..."}],"verbesserung":"...oder null wenn nicht nötig"}`;
+
+  try {
+    const raw = await callClaude(prompt);
+    const data = JSON.parse(raw);
+    renderCheck(data);
+    document.getElementById('check-results').style.display = 'block';
+  } catch(e) {
+    alert('Fehler – bitte erneut versuchen.');
+  } finally {
+    document.getElementById('loading-check').style.display = 'none';
+  }
+}
+
+function renderCheck(data) {
+  const score = data.score || 0;
+  document.getElementById('scoreNum').textContent = score + '%';
+  document.getElementById('scoreFill').style.width = score + '%';
+
+  const icons = { ok: '✓', warn: '!', fail: '✗' };
+  const items = document.getElementById('checkItems');
+  items.innerHTML = '';
+  (data.kriterien || []).forEach(k => {
+    items.innerHTML += `
+      <div class="check-item">
+        <div class="check-icon ${k.status}">${icons[k.status]}</div>
+        <div>
+          <div class="check-label">${k.name}</div>
+          <div class="check-desc">${esc(k.beschreibung)}</div>
+        </div>
+      </div>`;
+  });
+
+  const sug = document.getElementById('check-suggestion');
+  if (data.verbesserung && data.verbesserung !== 'null' && data.score < 80) {
+    document.getElementById('suggestion-text').textContent = data.verbesserung;
+    sug.style.display = 'block';
+  } else {
+    sug.style.display = 'none';
+  }
+}
+
+function copySuggestion() {
+  const t = document.getElementById('suggestion-text').textContent;
+  navigator.clipboard.writeText(t);
+}
+
+function prefillCheck(text) {
+  document.getElementById('check-input').value = text.replace(/\\n/g, '\n');
+}
+
+// ── REEL SKRIPT ───────────────────────────────────────
+async function generateSkript() {
+  const thema = document.getElementById('skript-thema').value.trim();
+  if (!thema) { alert('Bitte Thema oder Hook eingeben.'); return; }
+  const laenge = getActive('laenge-pills') || '30';
+  const stil = getActive('stil-pills') || 'ruhig & einladend';
+
+  document.getElementById('skriptBtn').disabled = true;
+  document.getElementById('loading-skript').style.display = 'block';
+  document.getElementById('skript-results').style.display = 'none';
+
+  const prompt = `Du bist Sprechtext-Autorin für eine systemische Coach (Marke "Mein Veränderungsweg", Zielgruppe Frauen 50+).
+
+Schreibe ein Instagram-Reel-Skript:
+- Thema: ${thema}
+- Länge: ${laenge} Sekunden (ca. ${Math.round(parseInt(laenge)*2.2)} Wörter gesprochen)
+- Sprechstil: ${stil}
+- Ton: warm, authentisch, KEINE Heilversprechen
+
+Struktur:
+[HOOK – 0-3 Sek.]: Erster Satz, der sofort sitzt
+[KERN – Mitte]: 2-3 Kernaussagen mit kurzen Pausen
+[CTA – Ende]: Sanfte Handlungsaufforderung (kein Druck)
+
+Format pro Zeile: "[TIMING] Sprechtext // 🎬 Visueller Hinweis"
+Beispiel: "[0-3 Sek.] Kennst du das Gefühl, dich selbst im Weg zu stehen? // 🎬 Nahaufnahme Gesicht, ruhiger Blick"
+
+Zusätzlich: Empfehle eine Musikstimmung aus: warm/inspirierend/nachdenklich/leicht/kraftvoll
+
+Antworte NUR als JSON:
+{"skript":"[0-3 Sek.] ...","musikstimmung":"warm","begruendung":"..."}`;
+
+  try {
+    const raw = await callClaude(prompt);
+    const data = JSON.parse(raw);
+    document.getElementById('skript-text').textContent = data.skript;
+    document.getElementById('skript-results').style.display = 'block';
+
+    // Show matching music
+    if (data.musikstimmung) {
+      const tracks = MUSIK_DB[data.musikstimmung] || MUSIK_DB['warm'];
+      const mp = document.getElementById('musik-passend');
+      mp.innerHTML = `<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem">KI empfiehlt Stimmung: <strong style="color:var(--gold)">${STIMMUNG_LABELS[data.musikstimmung]||data.musikstimmung}</strong> — ${data.begruendung||''}</p>`;
+      tracks.slice(0,3).forEach(t => mp.innerHTML += musikCard(t));
+      document.getElementById('musik-empfehlung').style.display = 'block';
+    }
+  } catch(e) {
+    alert('Fehler – bitte erneut versuchen.');
+  } finally {
+    document.getElementById('loading-skript').style.display = 'none';
+    document.getElementById('skriptBtn').disabled = false;
+  }
+}
+
+function copySkript() {
+  const t = document.getElementById('skript-text').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const b = document.getElementById('skript-copy-btn');
+    b.textContent = '✓ Kopiert!'; b.classList.add('copied');
+    setTimeout(() => { b.textContent = 'Skript kopieren'; b.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── MUSIK DATENBANK ───────────────────────────────────
+const STIMMUNG_LABELS = {
+  warm: '🌿 Warm & Ruhig',
+  inspirierend: '✨ Inspirierend',
+  nachdenklich: '🌙 Nachdenklich',
+  leicht: '☀️ Leicht & Frisch',
+  kraftvoll: '🔥 Kraftvoll'
+};
+
+const MUSIK_DB = {
+  warm: [
+    { titel: 'Soft Piano Reflection', artist: 'SergeQuadrado', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/piano%20soft/', stimmung: 'Sanftes Klavier, 72 BPM — perfekt für ruhige Selbstreflexions-Reels', tag: 'Klavier · Ruhig' },
+    { titel: 'Acoustic Morning', artist: 'Olexy', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/acoustic%20calm/', stimmung: 'Akustische Gitarre, warm und einladend — ideal für persönliche Momente', tag: 'Gitarre · Warm' },
+    { titel: 'Calm Nature Ambient', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/nature%20calm/', stimmung: 'Natur-Sounds mit sanfter Melodie — für Körper & Achtsamkeits-Themen', tag: 'Ambient · Natur' },
+    { titel: 'Gentle Acoustic', artist: 'Uppbeat', quelle: 'Uppbeat', url: 'https://uppbeat.io/browse/music/acoustic', stimmung: 'Zarte Gitarre mit Wärme — für Glaubenssatz- und Innerer-Kritiker-Themen', tag: 'Gitarre · Sanft' },
+    { titel: 'Cozy Morning', artist: 'Mixkit', quelle: 'Mixkit', url: 'https://mixkit.co/free-stock-music/tag/calm/', stimmung: 'Leichte, warme Untermalung ohne Ablenkung', tag: 'Piano · Warm' },
+  ],
+  inspirierend: [
+    { titel: 'Rise Up', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/uplifting/', stimmung: 'Aufbauende Melodie, leichte Streicher — für Neuanfang & Veränderung', tag: 'Orchestral · Aufbauend' },
+    { titel: 'New Beginnings', artist: 'Uppbeat', quelle: 'Uppbeat', url: 'https://uppbeat.io/browse/music/uplifting', stimmung: 'Inspirierender Beat mit Piano — für Selbstvertrauen-Themen', tag: 'Piano · Inspirierend' },
+    { titel: 'Hopeful Journey', artist: 'Mixkit', quelle: 'Mixkit', url: 'https://mixkit.co/free-stock-music/tag/inspirational/', stimmung: 'Cinematic, aufbauend — perfekt für Transformations-Reels', tag: 'Cinematic · Hoffnung' },
+    { titel: 'Light of Day', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/positive%20inspiring/', stimmung: 'Leicht und fröhlich mit Tiefe — für Lebensrad & Orientierungs-Themen', tag: 'Acoustic · Positiv' },
+    { titel: 'Forward Motion', artist: 'YouTube Audio Library', quelle: 'YouTube', url: 'https://www.youtube.com/audiolibrary', stimmung: 'Motivierender Flow ohne Text — ideal für 30–60 Sek. Reels', tag: 'Motivierend · Flow' },
+  ],
+  nachdenklich: [
+    { titel: 'Deep Contemplation', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/contemplative%20piano/', stimmung: 'Langsames Klavier, viel Raum — für Glaubenssatz-Themen mit Tiefe', tag: 'Klavier · Tief' },
+    { titel: 'Inner World', artist: 'Free Music Archive', quelle: 'FMA', url: 'https://freemusicarchive.org/genre/Ambient/', stimmung: 'Ambient ohne Melodie — lässt deine Stimme im Vordergrund', tag: 'Ambient · Raum' },
+    { titel: 'Midnight Thoughts', artist: 'Uppbeat', quelle: 'Uppbeat', url: 'https://uppbeat.io/browse/music/sad', stimmung: 'Emotionale Tiefe ohne Schwere — für den Inneren Kritiker', tag: 'Emotional · Weich' },
+    { titel: 'Still Waters', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/meditative/', stimmung: 'Meditativ, ruhig — für Körper-Themen und Achtsamkeit', tag: 'Meditativ · Stille' },
+    { titel: 'Quiet Reflection', artist: 'Mixkit', quelle: 'Mixkit', url: 'https://mixkit.co/free-stock-music/tag/meditation/', stimmung: 'Sehr ruhig, Platz für Sprache — ideal wenn du viel sprichst', tag: 'Ruhig · Raum' },
+  ],
+  leicht: [
+    { titel: 'Sunny Morning Walk', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/cheerful%20acoustic/', stimmung: 'Leicht und frisch — für positive, alltagsnahe Themen', tag: 'Akustisch · Fröhlich' },
+    { titel: 'Breezy Day', artist: 'Mixkit', quelle: 'Mixkit', url: 'https://mixkit.co/free-stock-music/tag/happy/', stimmung: 'Beschwingt ohne kitschig zu sein — für Community-Posts', tag: 'Leicht · Frisch' },
+    { titel: 'Coffee Time', artist: 'Uppbeat', quelle: 'Uppbeat', url: 'https://uppbeat.io/browse/music/happy', stimmung: 'Entspannte gute Laune — für Tipps und Alltags-Reels', tag: 'Lounge · Leicht' },
+    { titel: 'Spring Forward', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/light%20happy/', stimmung: 'Frühlingshaft, positiv — für Neuanfangs-Themen', tag: 'Positiv · Hell' },
+    { titel: 'Easy Going', artist: 'YouTube Audio Library', quelle: 'YouTube', url: 'https://www.youtube.com/audiolibrary', stimmung: 'Entspannt und zugänglich — Allrounder für Bild-Posts', tag: 'Einfach · Warm' },
+  ],
+  kraftvoll: [
+    { titel: 'She Rises', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/empowerment/', stimmung: 'Empowerment-Beat — für Selbstvertrauen & Grenzen-Themen', tag: 'Empowerment · Beat' },
+    { titel: 'Unbreakable', artist: 'Uppbeat', quelle: 'Uppbeat', url: 'https://uppbeat.io/browse/music/powerful', stimmung: 'Kraftvolle Dynamik — für transformative Momente', tag: 'Kraftvoll · Dynamisch' },
+    { titel: 'Own Your Story', artist: 'Mixkit', quelle: 'Mixkit', url: 'https://mixkit.co/free-stock-music/tag/motivational/', stimmung: 'Motivierend und stark — für CTA-starke Reels', tag: 'Motivierend · Stark' },
+    { titel: 'Bold Steps', artist: 'Pixabay', quelle: 'Pixabay', url: 'https://pixabay.com/music/search/powerful%20inspiring/', stimmung: 'Orchestral mit Drive — für Veränderungs-Themen', tag: 'Orchestral · Drive' },
+    { titel: 'Rise & Shine', artist: 'Free Music Archive', quelle: 'FMA', url: 'https://freemusicarchive.org/genre/Instrumental/', stimmung: 'Energetisch und klar — wenn du selbst nicht sprichst', tag: 'Instrumental · Energie' },
+  ]
+};
+
+function musikCard(t) {
+  const quelleColor = {'Pixabay':'#4A7C59','Uppbeat':'#B8935A','Mixkit':'#5C6BC0','YouTube':'#C62828','FMA':'#5C4033'};
+  const c = quelleColor[t.quelle] || '#8B6E5A';
+  return `<div class="hook-card" style="margin-bottom:0.7rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
+      <div class="hook-type">${t.tag}</div>
+      <span style="font-size:0.68rem;font-weight:600;padding:2px 8px;border-radius:10px;color:white;background:${c}">${t.quelle}</span>
+    </div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--text);margin-bottom:0.25rem">${esc(t.titel)}</div>
+    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;line-height:1.5">${esc(t.stimmung)}</div>
+    <a href="${t.url}" target="_blank" class="btn-secondary" style="display:inline-block;text-decoration:none;padding:0.4rem 0.9rem;font-size:0.78rem">🎵 Anhören & downloaden →</a>
+  </div>`;
+}
+
+function filterMusik(stimmung) {
+  // update pill state
+  document.querySelectorAll('#stimmung-pills .pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#stimmung-pills .pill').forEach(p => {
+    if (p.dataset.val === stimmung) p.classList.add('active');
+  });
+  const tracks = MUSIK_DB[stimmung] || [];
+  const liste = document.getElementById('musik-liste');
+  liste.innerHTML = '';
+  tracks.forEach(t => liste.innerHTML += musikCard(t));
+}
+
+// Init musik
+filterMusik('warm');
+
+// ── UTILS ─────────────────────────────────────────────
+function esc(s='') { return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escJs(s='') { return (s+'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n'); }
+
+function copyRaw(btn, text) {
+  const decoded = text.replace(/\\n/g, '\n');
+  navigator.clipboard.writeText(decoded).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Kopiert!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyThis(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Kopiert!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
