@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kurs-Werkstatt – Idee zu Kurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF4EC; --card:#FFFDFB; --rose:#C68A99; --rose-deep:#A96B7C;
+    --rose-soft:#F3E2E6; --ink:#4A413B; --muted:#948A82; --line:#ECDFD6;
+    --amber:#C99A4E; --amber-soft:#FBEFD8; --green:#7FA07A; --green-soft:#E7F0E4;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; color:var(--ink);
+    font-family:'Jost',sans-serif;
+    background:
+      radial-gradient(ellipse at 12% 0%, #FCEFE6 0%, transparent 55%),
+      radial-gradient(ellipse at 92% 100%, #F6E6EA 0%, transparent 55%),
+      var(--cream);
+    padding:30px 16px 60px;
+  }
+  .wrap{max-width:680px; margin:0 auto;}
+  header h1{font-family:'Cormorant Garamond',serif; font-weight:500; font-size:2.3rem; margin:0 0 6px;}
+  header p{color:var(--muted); margin:0 0 22px; font-size:.98rem; line-height:1.5;}
+  .tabs{display:flex; gap:8px; margin-bottom:22px;}
+  .tab{
+    flex:1; border:1px solid var(--line); background:var(--card); color:var(--muted);
+    font-family:'Jost',sans-serif; font-size:.95rem; padding:12px; border-radius:999px;
+    cursor:pointer; transition:.2s;
+  }
+  .tab.active{background:var(--rose); color:#fff; border-color:var(--rose);}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);}to{opacity:1; transform:none;}}
+  .box{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px; margin-bottom:18px;
+       box-shadow:0 16px 44px -30px rgba(120,80,70,.35);}
+  .box h2{font-family:'Cormorant Garamond',serif; font-weight:500; font-size:1.5rem; margin:0 0 4px;}
+  .box .sub{color:var(--muted); font-size:.9rem; margin:0 0 18px; line-height:1.5;}
+  label{display:block; font-size:.82rem; letter-spacing:.04em; color:var(--rose-deep); margin:0 0 6px; font-weight:500;}
+  textarea, input[type=text]{
+    width:100%; border:1px solid var(--line); border-radius:13px; padding:13px 15px;
+    font-family:'Jost',sans-serif; font-size:.98rem; color:var(--ink); background:#fff; outline:none;
+    transition:.2s; line-height:1.55;
+  }
+  textarea:focus, input:focus{border-color:var(--rose); box-shadow:0 0 0 4px rgba(198,138,153,.14);}
+  textarea{resize:vertical;}
+  .field{margin-bottom:16px;}
+  .row{display:flex; gap:10px; flex-wrap:wrap;}
+  .row .field{flex:1; min-width:160px;}
+  button.primary{
+    border:none; cursor:pointer; background:var(--rose); color:#fff; font-family:'Jost',sans-serif;
+    font-size:1rem; padding:14px 26px; border-radius:999px; transition:.2s;
+  }
+  button.primary:hover{background:var(--rose-deep);}
+  button.primary:disabled{background:#D9CDC6; cursor:not-allowed;}
+  button.ghost{
+    border:1px solid var(--line); background:transparent; color:var(--muted);
+    font-family:'Jost',sans-serif; font-size:.85rem; padding:8px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  button.ghost:hover{border-color:var(--rose); color:var(--rose-deep);}
+  .item{border:1px solid var(--line); border-radius:13px; padding:12px 14px; margin-bottom:10px; background:#FFFDFB;}
+  .item .t{font-weight:500;}
+  .item .m{font-size:.85rem; color:var(--muted); margin-top:2px;}
+  .item .x{float:right; cursor:pointer; color:#C9B8B0; font-size:1.1rem; line-height:1; border:none; background:none;}
+  .item .x:hover{color:var(--rose-deep);}
+  .savebar{display:flex; align-items:center; gap:14px; margin-top:6px;}
+  .saved{font-size:.85rem; color:var(--green);}
+  .status{font-size:.9rem; color:var(--muted); margin-top:14px; min-height:20px; line-height:1.5;}
+  .status.work{color:var(--rose-deep);}
+  .status.err{color:#B5635E;}
+  /* proposal */
+  .module{border-left:3px solid var(--rose); padding:4px 0 4px 16px; margin:0 0 18px;}
+  .module h3{font-family:'Cormorant Garamond',serif; font-weight:600; font-size:1.25rem; margin:0 0 4px;}
+  .module p{margin:0 0 6px; line-height:1.55; font-size:.96rem;}
+  .module .ub{font-size:.9rem; color:var(--rose-deep);}
+  .flag{border-radius:12px; padding:12px 16px; margin:0 0 10px; font-size:.92rem; line-height:1.5;}
+  .flag.warn{background:var(--amber-soft); border:1px solid #EBD3A0;}
+  .flag.warn b{color:var(--amber);}
+  .flag.ok{background:var(--green-soft); border:1px solid #CBE0C4;}
+  .flag.ok b{color:var(--green);}
+  .flag ul{margin:6px 0 0; padding-left:18px;}
+  .meta{background:var(--rose-soft); border-radius:13px; padding:14px 18px; margin:0 0 18px;}
+  .meta .lbl{font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:var(--rose-deep);}
+  .spin{display:inline-block; width:15px; height:15px; border:2px solid var(--rose-soft); border-top-color:var(--rose);
+        border-radius:50%; animation:sp .8s linear infinite; vertical-align:-2px; margin-right:8px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  /* mic button */
+  .mic-btn{
+    position:absolute; right:10px; top:10px;
+    border:none; background:transparent; font-size:1.1rem; cursor:pointer;
+    opacity:.55; transition:.2s; padding:4px; line-height:1;
+  }
+  .mic-btn:hover{opacity:1;}
+  .mic-btn.recording{opacity:1; animation:pulse .8s ease infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+  textarea{padding-right:40px;}
+
+  .insta-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px;}
+  @media(max-width:480px){.insta-grid{grid-template-columns:1fr;}}
+  .insta-card{background:var(--cream); border:1px solid var(--line); border-radius:13px; padding:14px 16px; position:relative;}
+  .insta-card .ic-label{font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; color:var(--rose-deep); margin-bottom:6px; font-weight:500;}
+  .insta-card .ic-text{font-size:.93rem; line-height:1.6; white-space:pre-wrap;}
+  .insta-card .ic-signal{font-size:.75rem; color:var(--green); margin-top:6px; font-style:italic;}
+  .insta-card .copy-btn{position:absolute; top:8px; right:10px; border:1px solid var(--line); background:var(--card); color:var(--muted); font-family:'Jost',sans-serif; font-size:.75rem; padding:3px 9px; border-radius:999px; cursor:pointer; transition:.2s;}
+  .insta-card .copy-btn:hover{border-color:var(--rose); color:var(--rose-deep);}
+  .hook-item{background:var(--rose-soft); border-radius:11px; padding:12px 14px; margin-bottom:8px; font-size:.96rem; line-height:1.55; position:relative; padding-right:80px;}
+  .hook-item .copy-btn{position:absolute; top:10px; right:10px; border:1px solid rgba(166,107,124,.3); background:transparent; color:var(--rose-deep); font-family:'Jost',sans-serif; font-size:.75rem; padding:3px 9px; border-radius:999px; cursor:pointer; transition:.2s;}
+  .hook-item .copy-btn:hover{background:var(--rose); color:#fff; border-color:var(--rose);}
+  .email-item{border:1px solid var(--line); border-radius:11px; padding:14px 16px; margin-bottom:10px; background:#FFFDFB;}
+  .email-item .ei-nr{font-size:.78rem; letter-spacing:.06em; color:var(--muted); text-transform:uppercase;}
+  .email-item .ei-betreff{font-weight:500; margin:4px 0 6px; font-size:1rem;}
+  .email-item .ei-ziel{font-size:.85rem; color:var(--rose-deep); margin-bottom:4px;}
+  .email-item .ei-inhalt{font-size:.9rem; color:var(--muted); line-height:1.5;}
+  .section-title{font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:600; color:var(--ink); margin:22px 0 10px; border-bottom:1px solid var(--line); padding-bottom:6px;}
+
+  .pill-group{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .pill{
+    border:1px solid var(--line); background:var(--card); color:var(--muted);
+    font-family:'Jost',sans-serif; font-size:.85rem; padding:7px 15px; border-radius:999px;
+    cursor:pointer; transition:.2s; user-select:none;
+  }
+  .pill.on{background:var(--rose-soft); color:var(--rose-deep); border-color:var(--rose);}
+  .story-out{
+    background:var(--cream); border:1px solid var(--line); border-radius:13px;
+    padding:18px; margin-top:16px; font-size:.97rem; line-height:1.7;
+    white-space:pre-wrap; position:relative;
+  }
+  .story-out .copy-btn{
+    position:absolute; top:10px; right:12px; border:1px solid var(--line); background:var(--card);
+    color:var(--muted); font-family:'Jost',sans-serif; font-size:.78rem; padding:4px 11px;
+    border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .story-out .copy-btn:hover{border-color:var(--rose); color:var(--rose-deep);}
+  .format-section{border-top:1px solid var(--line); padding-top:20px; margin-top:20px;}
+  .format-section:first-child{border-top:none; padding-top:0; margin-top:0;}
+  .format-label{font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; color:var(--rose-deep); margin:0 0 10px;}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Kurs-Werkstatt</h1>
+    <p>Aus deinen Ideen wird ein Kursvorschlag – geprüft auf Dopplungen, mit Storytelling aus Kundensicht und Expertentext, ablegbar in Notion.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="work">Idee → Kurs</button>
+    <button class="tab" data-tab="story">Storytelling</button>
+    <button class="tab" data-tab="insta">Instagram</button>
+    <button class="tab" data-tab="brain">Wissensbasis</button>
+  </div>
+
+  <!-- ARBEITSBEREICH -->
+  <section class="panel active" id="panel-work">
+    <div class="box">
+      <h2>Deine Ideensammlung</h2>
+      <p class="sub">Trag hier deine gesammelten Ideen ein (z. B. aus dem Lebensrad-Raster in Notion). Daraus entsteht ein strukturierter Kursvorschlag.</p>
+      <div class="field">
+        <textarea id="idea" rows="6" placeholder="z. B. Thema „Erholsamer Schlaf" – Einschlafrituale, Bildschirmzeit am Abend, Schlafhygiene, Umgang mit nächtlichem Grübeln …"></textarea>
+      </div>
+      <button class="primary" id="gen">Kursvorschlag erstellen</button>
+      <div class="status" id="genStatus"></div>
+    </div>
+
+    <div id="result"></div>
+  </section>
+
+  <!-- STORYTELLING -->
+  <section class="panel" id="panel-story">
+    <div class="box">
+      <h2>Storytelling</h2>
+      <p class="sub">Wähle einen Kurs – ich erstelle Kursbeschreibung, Kundenstimmen-Ideen und die fertigen Texte automatisch.</p>
+
+      <div class="field">
+        <label>Kurs auswählen</label>
+        <div class="pill-group" id="st-kurs-pills" style="flex-wrap:wrap;"></div>
+      </div>
+
+      <div class="field" id="st-desc-field" style="display:none;">
+        <label>Kurzbeschreibung <span style="color:var(--muted);font-weight:400;">(automatisch – anpassbar)</span></label>
+        <div style="position:relative;">
+          <textarea id="st-kurs-desc" rows="3"></textarea>
+          <button class="mic-btn" id="mic-st-desc" title="Spracheingabe">🎙</button>
+        </div>
+      </div>
+
+      <div class="field" id="st-ideen-field" style="display:none;">
+        <label>Was soll die Kundenstimme vermitteln? <span style="color:var(--muted);font-weight:400;">(Ideen zum Anklicken oder eigener Text)</span></label>
+        <div class="pill-group" id="st-ergebnis-pills" style="flex-wrap:wrap; margin-bottom:8px;"></div>
+        <div style="position:relative;">
+          <textarea id="st-ergebnis" rows="3" placeholder="Oder eigene Idee eintragen …"></textarea>
+          <button class="mic-btn" id="mic-st-ergebnis" title="Spracheingabe">🎙</button>
+        </div>
+      </div>
+
+      <div class="field" id="st-kanal-field" style="display:none;">
+        <label>Kanal</label>
+        <div class="pill-group" id="kanal-pills">
+          <span class="pill on" data-v="Instagram">Instagram</span>
+          <span class="pill" data-v="Newsletter">Newsletter</span>
+          <span class="pill" data-v="Website">Website</span>
+          <span class="pill" data-v="LinkedIn">LinkedIn</span>
+        </div>
+      </div>
+
+      <div class="field" id="st-laenge-field" style="display:none;">
+        <label>Länge</label>
+        <div class="pill-group" id="laenge-pills">
+          <span class="pill on" data-v="kurz">Kurz (Caption / Teaser)</span>
+          <span class="pill" data-v="mittel">Mittel (Beitrag)</span>
+          <span class="pill" data-v="lang">Lang (Blogartikel / Landingpage)</span>
+        </div>
+      </div>
+
+      <button class="primary" id="genStory" style="display:none;">Storytelling generieren</button>
+      <div class="status" id="storyStatus"></div>
+    </div>
+
+    <div id="storyResult"></div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section class="panel" id="panel-insta">
+    <div class="box">
+      <h2>Instagram-System</h2>
+      <p class="sub">Wähle einen Kurs – ich erstelle Beschreibung, Modulvorschläge und das komplette Content-Paket.</p>
+
+      <div class="field">
+        <label>Kurs auswählen</label>
+        <div class="pill-group" id="ig-kurs-pills" style="flex-wrap:wrap;"></div>
+      </div>
+
+      <div id="ig-details" style="display:none;">
+        <div class="field">
+          <label>Kurzbeschreibung <span style="color:var(--muted);font-weight:400;">(automatisch – anpassbar)</span></label>
+          <div style="position:relative;">
+            <textarea id="ig-desc" rows="2"></textarea>
+            <button class="mic-btn" id="mic-ig-desc" title="Spracheingabe">🎙</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Module / Inhalte <span style="color:var(--muted);font-weight:400;">(Vorschläge anklicken oder eigenen Text eingeben)</span></label>
+          <div class="pill-group" id="ig-modul-pills" style="flex-wrap:wrap; margin-bottom:8px;"></div>
+          <div style="position:relative;">
+            <input type="text" id="ig-module" placeholder="Ausgewählte Module erscheinen hier …">
+            <button class="mic-btn" style="top:50%;transform:translateY(-50%);" id="mic-ig-module" title="Spracheingabe">🎙</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="primary" id="genInsta" style="display:none;">Content-Paket erstellen</button>
+      <div class="status" id="instaStatus"></div>
+    </div>
+    <div id="instaResult"></div>
+  </section>
+
+  <!-- GEHIRN -->
+  <section class="panel" id="panel-brain">
+    <div class="box">
+      <h2>Wissensbasis</h2>
+      <p class="sub">Das „Gedächtnis" der App. Es fließt in jeden Vorschlag ein. Du kannst alles ändern – die App merkt es sich dauerhaft.</p>
+
+      <div class="field">
+        <label>Über dich &amp; deine Expertise</label>
+        <textarea id="b-expertise" rows="4"></textarea>
+      </div>
+      <div class="field">
+        <label>Gewünschter Ton</label>
+        <input type="text" id="b-tone">
+      </div>
+      <div class="field">
+        <label>Hauptkurs &amp; sein Aufbau (Vorlage für neue Kurse)</label>
+        <textarea id="b-main" rows="4"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Bestehende Kurse (zum Abgleich gegen Dopplungen)</label>
+        <div id="courseList"></div>
+        <div class="row">
+          <div class="field"><input type="text" id="c-name" placeholder="Kursname"></div>
+          <div class="field"><input type="text" id="c-thema" placeholder="Thema / Typ"></div>
+        </div>
+        <button class="ghost" id="addCourse">+ Kurs hinzufügen</button>
+      </div>
+
+      <div class="field">
+        <label>Quellen / Bücher (aktualisierbar)</label>
+        <div id="sourceList"></div>
+        <div class="row">
+          <div class="field"><input type="text" id="s-title" placeholder="Buchtitel"></div>
+          <div class="field"><input type="text" id="s-author" placeholder="Autor:in"></div>
+        </div>
+        <div class="field"><input type="text" id="s-note" placeholder="Kurzer Hinweis: worum geht es? (optional)"></div>
+        <button class="ghost" id="addSource">+ Buchquelle hinzufügen</button>
+      </div>
+
+      <div class="savebar">
+        <button class="primary" id="saveBrain">Wissensbasis speichern</button>
+        <span class="saved" id="savedMsg"></span>
+      </div>
+      <p class="note">Hinweis: Die Wissensbasis wird sicher in dieser App gespeichert und bleibt beim nächsten Öffnen erhalten. KI-Vorschlag und Notion-Export funktionieren, solange die App hier in Claude läuft.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const STORE_KEY = "kurs-werkstatt-brain-v1";
+  const MODEL = "claude-sonnet-4-20250514";
+
+  const DEFAULT_BRAIN = {
+    name: "Tanja Sattelberg",
+    expertise: "Tanja Sattelberg entwickelt digitale Selbstlernkurse zu Gesundheit, mentaler Stärke und einem gesunden Lebensstil als eigenständige E-Learning-Web-Apps. Anspruch: Alle Inhalte beruhen auf gesicherter, peer-reviewter Forschung; keine medizinischen Heilversprechen, sondern Aufklärung und Prävention.",
+    tone: "warm, vertrauenswürdig, beruhigend und ermutigend; für Laien verständlich, Fachbegriffe kurz erklärt",
+    mainCourse: {
+      name: "Lebensrad",
+      struktur: "Geführte Reise aus mehreren Modulen entlang einer Entwicklung (z. B. Standortbestimmung → innere Muster erkennen → altes loslassen → neues Selbstbild → Integration). Diagnose über 8 Lebensbereiche. Pro Modul: kurzer Impuls, eine Reflexionsfrage und eine kleine Übung."
+    },
+    courses: [
+      { name: "Lebensrad", thema: "Hauptkurs – innerer Neustart entlang der Lebensbereiche" },
+      { name: "Das regenerative Gehirn", thema: "Nebenkurs – Stressmanagement & Burnout-Prävention" },
+      { name: "Rauchfrei", thema: "Nebenkurs – Rauchentwöhnung" }
+    ],
+    sources: []
+  };
+
+  let brain = JSON.parse(JSON.stringify(DEFAULT_BRAIN));
+
+  // ---------- Persistenz ----------
+  async function loadBrain(){
+    try{
+      const r = await window.storage.get(STORE_KEY);
+      if(r && r.value){ brain = JSON.parse(r.value); }
+    }catch(e){ /* noch nicht vorhanden -> Default */ }
+    renderBrain();
+  }
+  async function saveBrain(){
+    readBrainFromForm();
+    try{
+      await window.storage.set(STORE_KEY, JSON.stringify(brain));
+      flash("savedMsg","Gespeichert ✓");
+    }catch(e){
+      flash("savedMsg","Speichern nicht möglich – lief die App außerhalb von Claude?");
+    }
+  }
+  function flash(id,msg){ const el=document.getElementById(id); el.textContent=msg; setTimeout(()=>{el.textContent="";},2500); }
+
+  // ---------- Gehirn rendern / lesen ----------
+  function renderBrain(){
+    document.getElementById("b-expertise").value = brain.expertise || "";
+    document.getElementById("b-tone").value = brain.tone || "";
+    document.getElementById("b-main").value = brain.mainCourse ? brain.mainCourse.struktur : "";
+    renderCourses(); renderSources();
+  }
+  function readBrainFromForm(){
+    brain.expertise = document.getElementById("b-expertise").value.trim();
+    brain.tone = document.getElementById("b-tone").value.trim();
+    if(!brain.mainCourse) brain.mainCourse = {name:"Lebensrad"};
+    brain.mainCourse.struktur = document.getElementById("b-main").value.trim();
+  }
+  function renderCourses(){
+    const c = document.getElementById("courseList"); c.innerHTML="";
+    brain.courses.forEach((co,i)=>{
+      const d=document.createElement("div"); d.className="item";
+      d.innerHTML=`<button class="x" data-i="${i}">×</button><div class="t"></div><div class="m"></div>`;
+      d.querySelector(".t").textContent=co.name;
+      d.querySelector(".m").textContent=co.thema||"";
+      d.querySelector(".x").onclick=()=>{brain.courses.splice(i,1); renderCourses();};
+      c.appendChild(d);
+    });
+  }
+  function renderSources(){
+    const c = document.getElementById("sourceList"); c.innerHTML="";
+    if(brain.sources.length===0){
+      const e=document.createElement("div"); e.className="m"; e.style.cssText="font-size:.85rem;color:#B9ADA4;margin-bottom:8px;";
+      e.textContent="Noch keine Quellen. Füge unten deine Bücher hinzu.";
+      c.appendChild(e);
+    }
+    brain.sources.forEach((s,i)=>{
+      const d=document.createElement("div"); d.className="item";
+      d.innerHTML=`<button class="x" data-i="${i}">×</button><div class="t"></div><div class="m"></div>`;
+      d.querySelector(".t").textContent=s.title + (s.author? " — "+s.author : "");
+      d.querySelector(".m").textContent=s.note||"";
+      d.querySelector(".x").onclick=()=>{brain.sources.splice(i,1); renderSources();};
+      c.appendChild(d);
+    });
+  }
+  document.getElementById("addCourse").onclick=()=>{
+    const n=document.getElementById("c-name").value.trim();
+    const t=document.getElementById("c-thema").value.trim();
+    if(!n) return;
+    brain.courses.push({name:n,thema:t});
+    document.getElementById("c-name").value=""; document.getElementById("c-thema").value="";
+    renderCourses();
+  };
+  document.getElementById("addSource").onclick=()=>{
+    const t=document.getElementById("s-title").value.trim();
+    if(!t) return;
+    brain.sources.push({
+      title:t,
+      author:document.getElementById("s-author").value.trim(),
+      note:document.getElementById("s-note").value.trim()
+    });
+    document.getElementById("s-title").value="";
+    document.getElementById("s-author").value="";
+    document.getElementById("s-note").value="";
+    renderSources();
+  };
+  document.getElementById("saveBrain").onclick=saveBrain;
+
+  // ---------- Tabs ----------
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.onclick=()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      document.getElementById("panel-"+t.dataset.tab).classList.add("active");
+    };
+  });
+
+  // ---------- KI: Idee -> Kursvorschlag ----------
+  let lastProposal=null;
+
+  document.getElementById("gen").onclick=generate;
+
+  async function generate(){
+    readBrainFromForm();
+    const idea=document.getElementById("idea").value.trim();
+    const st=document.getElementById("genStatus");
+    if(!idea){ st.className="status err"; st.textContent="Bitte zuerst eine Idee eintragen."; return; }
+    setBusy(true);
+    st.className="status work"; st.innerHTML='<span class="spin"></span>Ich entwickle einen Kursvorschlag …';
+    document.getElementById("result").innerHTML="";
+
+    const prompt =
+`Du bist die Kurs-Werkstatt von ${brain.name}. Nutze ihre Expertise, ihren Ton, ihre Quellen und ihre bestehenden Kurse (WISSENSBASIS).
+Aufgabe: Entwickle aus der IDEENSAMMLUNG einen strukturierten Kursvorschlag im Aufbau ihres Hauptkurses.
+Regeln: Inhalte auf gesicherter, peer-reviewter Forschung; keine medizinischen Heilversprechen. Struktur wie der Hauptkurs (geführte Reise aus Modulen; je Modul kurze Beschreibung + kleine Übung/Reflexion).
+Prüfe streng:
+- DOPPLUNGEN: Überschneidungen mit Hauptkurs oder bestehenden Kursen (konkret benennen).
+- UNGEREIMTHEITEN: Widersprüche, fachlich heikle/unbelegte Punkte, Unklarheiten.
+
+WISSENSBASIS:
+${JSON.stringify(brain)}
+
+IDEENSAMMLUNG:
+"""${idea}"""
+
+Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Text, keine Backticks):
+{"kurstitel":"","kurzbeschreibung":"","zielgruppe":"","module":[{"titel":"","beschreibung":"","uebung":""}],"dopplungen":[""],"ungereimtheiten":[""],"quellenhinweise":[""]}
+Maximal 6 Module. Knapp und konkret. Wenn keine Dopplungen/Ungereimtheiten: leere Liste.`;
+
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({model:MODEL, max_tokens:1000, messages:[{role:"user",content:prompt}]})
+      });
+      const data=await res.json();
+      const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+      const clean=text.replace(/```json/gi,"").replace(/```/g,"").trim();
+      const proposal=JSON.parse(clean);
+      lastProposal=proposal;
+      renderProposal(proposal);
+      st.className="status"; st.textContent="";
+    }catch(e){
+      st.className="status err";
+      st.textContent="Das hat nicht geklappt. Diese Funktion braucht die KI – stelle sicher, dass die App hier in Claude geöffnet ist, und versuche es erneut.";
+    }finally{ setBusy(false); }
+  }
+  function setBusy(b){ document.getElementById("gen").disabled=b; }
+
+  function renderProposal(p){
+    const r=document.getElementById("result");
+    const mods=(p.module||[]).map(m=>`
+      <div class="module">
+        <h3>${esc(m.titel)}</h3>
+        <p>${esc(m.beschreibung)}</p>
+        ${m.uebung?`<p class="ub">Übung: ${esc(m.uebung)}</p>`:""}
+      </div>`).join("");
+    const dop=(p.dopplungen||[]).filter(Boolean);
+    const ung=(p.ungereimtheiten||[]).filter(Boolean);
+    const qu=(p.quellenhinweise||[]).filter(Boolean);
+
+    const dopBlock = dop.length
+      ? `<div class="flag warn"><b>Mögliche Dopplungen mit bestehenden Kursen</b><ul>${dop.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`
+      : `<div class="flag ok"><b>Keine Dopplungen erkannt</b> – der Kurs ergänzt dein Angebot.</div>`;
+    const ungBlock = ung.length
+      ? `<div class="flag warn"><b>Zu prüfen (Ungereimtheiten)</b><ul>${ung.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`
+      : `<div class="flag ok"><b>Keine Ungereimtheiten erkannt.</b></div>`;
+    const quBlock = qu.length
+      ? `<div class="meta"><span class="lbl">Quellenhinweise</span><ul style="margin:6px 0 0;padding-left:18px;">${qu.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+
+    r.innerHTML=`
+      <div class="box">
+        <h2>${esc(p.kurstitel||"Kursvorschlag")}</h2>
+        <p class="sub">${esc(p.kurzbeschreibung||"")}</p>
+        ${p.zielgruppe?`<div class="meta"><span class="lbl">Zielgruppe</span><div>${esc(p.zielgruppe)}</div></div>`:""}
+        ${mods}
+        ${dopBlock}
+        ${ungBlock}
+        ${quBlock}
+        <div class="savebar" style="margin-top:18px;">
+          <button class="primary" id="toNotion">In Notion ablegen</button>
+        </div>
+        <div class="status" id="notionStatus"></div>
+      </div>`;
+    document.getElementById("toNotion").onclick=exportNotion;
+  }
+
+  // ---------- Export nach Notion (über MCP) ----------
+  async function exportNotion(){
+    if(!lastProposal) return;
+    const st=document.getElementById("notionStatus");
+    const btn=document.getElementById("toNotion");
+    btn.disabled=true;
+    st.className="status work"; st.innerHTML='<span class="spin"></span>Lege den Vorschlag in Notion ab …';
+
+    const md=proposalToMarkdown(lastProposal);
+    const prompt =
+`Lege diesen Kursvorschlag in Notion ab.
+Schritte: Suche eine Seite mit dem Titel "Kursideen-Dashboard". Existiert sie nicht, erstelle sie. Lege darunter eine neue Seite mit dem Titel "${lastProposal.kurstitel}" an und fülle sie mit dem folgenden Inhalt (Notion-Markdown). Bestätige am Ende mit der URL der erstellten Seite.
+
+INHALT:
+${md}`;
+
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:MODEL, max_tokens:1000,
+          messages:[{role:"user",content:prompt}],
+          mcp_servers:[{type:"url", url:"https://mcp.notion.com/mcp", name:"notion"}]
+        })
+      });
+      const data=await res.json();
+      const blocks=data.content||[];
+      const texts=blocks.filter(b=>b.type==="text").map(b=>b.text).join(" ");
+      const toolResults=blocks.filter(b=>b.type==="mcp_tool_result")
+        .map(b=>(b.content&&b.content[0]&&b.content[0].text)||"").join(" ");
+      const all=texts+" "+toolResults;
+      const urlMatch=all.match(/https?:\/\/[^\s")]+notion[^\s")]*/i);
+      st.className="status";
+      if(urlMatch){
+        st.innerHTML=`In Notion gespeichert ✓ <a href="${urlMatch[0]}" target="_blank" style="color:var(--rose-deep);">Seite öffnen</a>`;
+      }else if(texts.trim()){
+        st.textContent='In Notion gespeichert ✓ – schau im „Kursideen-Dashboard" nach.';
+      }else{
+        st.className="status err";
+        st.textContent="Antwort unklar – bitte in Notion prüfen, ob die Seite angelegt wurde.";
+      }
+    }catch(e){
+      st.className="status err";
+      st.textContent="Notion-Export hat nicht geklappt. Prüfe, ob deine Notion-Verbindung in Claude aktiv ist, und versuche es erneut.";
+    }finally{ btn.disabled=false; }
+  }
+
+  function proposalToMarkdown(p){
+    let s=`**${p.kurzbeschreibung||""}**\n\n`;
+    if(p.zielgruppe) s+=`*Zielgruppe:* ${p.zielgruppe}\n\n`;
+    s+=`## Module\n`;
+    (p.module||[]).forEach((m,i)=>{
+      s+=`### ${i+1}. ${m.titel}\n${m.beschreibung||""}\n`;
+      if(m.uebung) s+=`> Übung: ${m.uebung}\n`;
+      s+=`\n`;
+    });
+    const dop=(p.dopplungen||[]).filter(Boolean);
+    const ung=(p.ungereimtheiten||[]).filter(Boolean);
+    const qu=(p.quellenhinweise||[]).filter(Boolean);
+    s+=`## Prüfung\n**Mögliche Dopplungen:** ${dop.length?"":"keine"}\n`;
+    dop.forEach(x=>s+=`- ${x}\n`);
+    s+=`\n**Ungereimtheiten / zu prüfen:** ${ung.length?"":"keine"}\n`;
+    ung.forEach(x=>s+=`- ${x}\n`);
+    if(qu.length){ s+=`\n## Quellenhinweise\n`; qu.forEach(x=>s+=`- ${x}\n`); }
+    return s;
+  }
+
+  function esc(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  // ---------- Kurskatalog ----------
+  const KURSE = [
+    { name:"Einstieg / Ankommen", module:["Orientierung finden","Ressourcen entdecken","Den eigenen Rhythmus spueren","Anker setzen","Stille zulassen","Praesenz ueben","Vertrauen aufbauen","Ankommen im Jetzt"] },
+    { name:"Nervensystem & Selbstregulation", module:["Das Nervensystem verstehen","Stresssignale erkennen","Polyvagaltheorie im Alltag","Beruhigungsanker","Koerperwahrnehmung schaerfen","Co-Regulation","Trauma-sensible Selbstfuersorge","Integration"] },
+    { name:"Glaubenssaetze erkennen", module:["Was sind Glaubenssaetze?","Wo kommen sie her?","Muster aufdecken","Den inneren Dialog beobachten","Glaubenssaetze hinterfragen","Neue Perspektiven entwickeln","Umschreiben statt kaempfen","Neue Ueberzeugungen verankern"] },
+    { name:"Verhaltensmuster veraendern", module:["Muster erkennen","Trigger verstehen","Gewohnheiten analysieren","Kleine Schritte planen","Atomic Habits im Alltag","Rueckfaelle einplanen","Neue Routinen aufbauen","Veraenderung feiern"] },
+    { name:"Selbstfuersorge & innere Staerke", module:["Was brauche ich wirklich?","Grenzen kennen und setzen","Nein sagen lernen","Koerper als Verbuendeten","Erholung aktiv gestalten","Innere Staerke aufbauen","Selbstmitgefuehl (Kristin Neff)","Nachhaltige Selbstfuersorge"] },
+    { name:"Endlich Rauchfrei", module:["Meine Beziehung zur Zigarette","Warum ich rauche","Der psychologische Haken","Ausstiegsstrategie","Entzug begleiten","Trigger und Alternativen","Das neue Selbstbild","Rauchfrei bleiben"] },
+    { name:"Selbstwert & Selbstvertrauen", module:["Selbstwert vs. Selbstvertrauen","Mein inneres Bild","Vergleiche loslassen","Die eigene Geschichte","Leistung und Wert trennen","Selbstakzeptanz ueben","Staerken sehen","Neues Selbstbild verankern"] },
+    { name:"Die Mutterwunde", module:["Was ist die Mutterwunde?","Meine Geschichte","Muster in der Beziehung","Gefuehle zulassen","Trauer und Wut begleiten","Die Mutter in mir","Loslassen und verzeihen","Integration und Heilung"] },
+    { name:"Integration", module:["Rueckblick auf den Weg","Was hat sich veraendert?","Neue Identitaet","Beziehungen neu gestalten","Rueckfallschutz","Meine Ressourcen","Die naechsten Schritte","Lebensrad neu gestalten"] },
+    { name:"Was ich mir glaube (Vertiefung)", module:["Glaubenssaetze vertiefen","Koerper und Ueberzeugungen","Die 4 Fragen (Byron Katie)","Turnarounds erleben","Neue Wahrheit verankern","Integration"] },
+    { name:"Mein innerer Kritiker", module:["Die Stimme kennenlernen","Woher kommt der Kritiker?","Polyvagale Perspektive","Den Kritiker entwaaffnen","Selbstmitgefuehl kultivieren","Integration & Freundschaft"] },
+    { name:"Die Stimme, die immer dabei ist", module:["Einfuehrung innerer Kritiker","Erste Werkzeuge","Mitgefuehl als Antwort"] }
+  ];
+
+  // ---------- Spracheingabe ----------
+  function initMic(btnId, targetId, appendMode){
+    const btn=document.getElementById(btnId);
+    if(!btn) return;
+    if(!("webkitSpeechRecognition" in window||"SpeechRecognition" in window)){
+      btn.style.opacity=".2"; btn.style.cursor="default"; return;
+    }
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    let rec=null; let active=false;
+    btn.onclick=()=>{
+      if(active){ rec&&rec.stop(); return; }
+      rec=new SR(); rec.lang="de-DE"; rec.interimResults=false; rec.maxAlternatives=1;
+      rec.onstart=()=>{ active=true; btn.classList.add("recording"); };
+      rec.onend=()=>{ active=false; btn.classList.remove("recording"); };
+      rec.onresult=(e)=>{
+        const t=e.results[0][0].transcript;
+        const el=document.getElementById(targetId);
+        if(!el) return;
+        if(appendMode){ el.value=(el.value?el.value+", ":"")+t; }
+        else{ el.value=(el.value?el.value+" ":"")+t; }
+        el.dispatchEvent(new Event("input"));
+      };
+      rec.onerror=()=>{ active=false; btn.classList.remove("recording"); };
+      rec.start();
+    };
+  }
+
+  // ---------- Kurs-Pills rendern ----------
+  function renderKursPills(containerId, onSelect){
+    const c=document.getElementById(containerId); if(!c) return;
+    c.innerHTML="";
+    KURSE.forEach(k=>{
+      const p=document.createElement("span");
+      p.className="pill"; p.textContent=k.name;
+      p.onclick=()=>{
+        c.querySelectorAll(".pill").forEach(x=>x.classList.remove("on"));
+        p.classList.add("on");
+        onSelect(k);
+      };
+      c.appendChild(p);
+    });
+  }
+
+  // ---------- KI: Kursbeschreibung ----------
+  async function genKursbeschreibung(kursName, module, targetId){
+    const el=document.getElementById(targetId); if(!el) return;
+    el.value=""; el.placeholder="Wird generiert …";
+    const prompt="Schreibe eine kurze, warme Kursbeschreibung (3-4 Saetze) fuer den Online-Kurs \""+kursName+"\" von Tanja Sattelberg (systemische Coach, Frauen 50+). Ton: warm, ermutigend, keine Heilversprechen. Inhalte: "+module.join(", ")+". Nur den Text ausgeben, kein JSON.";
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:MODEL,max_tokens:300,messages:[{role:"user",content:prompt}]})});
+      const data=await res.json();
+      el.value=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim();
+      el.placeholder="";
+    }catch(e){ el.placeholder="Bitte selbst eintragen."; }
+  }
+
+  // ---------- KI: Kundenstimmen-Ideen ----------
+  async function genKundenIdeen(kursName){
+    const c=document.getElementById("st-ergebnis-pills"); if(!c) return;
+    c.innerHTML=`<span style="font-size:.83rem;color:var(--muted);">Ideen werden geladen …</span>`;
+    const prompt="Generiere 5 kurze Kundenstimmen-Ideen fuer den Kurs \""+kursName+"\" (Frauen 50+, systemisches Coaching). Jede Idee beschreibt in 1 Satz, was eine Teilnehmerin erlebt / gelernt / veraendert hat. Authentisch, emotional, konkret. NUR gueltiges JSON (keine Backticks): {\"ideen\":[\"\",\"\",\"\",\"\",\"\"]}";
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:MODEL,max_tokens:400,messages:[{role:"user",content:prompt}]})});
+      const data=await res.json();
+      const raw=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").replace(/```json/gi,"").replace(/```/g,"").trim();
+      const parsed=JSON.parse(raw);
+      c.innerHTML="";
+      (parsed.ideen||[]).forEach(idea=>{
+        const p=document.createElement("span"); p.className="pill"; p.textContent=idea;
+        p.onclick=()=>{
+          document.getElementById("st-ergebnis").value=idea;
+          c.querySelectorAll(".pill").forEach(x=>x.classList.remove("on"));
+          p.classList.add("on");
+        };
+        c.appendChild(p);
+      });
+    }catch(e){ c.innerHTML=`<span style="font-size:.83rem;color:var(--muted);">Ideen nicht verfuegbar – bitte selbst eintragen.</span>`; }
+  }
+
+  // ---------- Modul-Pills Instagram ----------
+  function renderModulPills(module){
+    const c=document.getElementById("ig-modul-pills"); if(!c) return;
+    c.innerHTML=""; let selected=[];
+    module.forEach(m=>{
+      const p=document.createElement("span"); p.className="pill"; p.textContent=m;
+      p.onclick=()=>{
+        p.classList.toggle("on");
+        if(p.classList.contains("on")){ selected.push(m); }
+        else{ selected=selected.filter(x=>x!==m); }
+        document.getElementById("ig-module").value=selected.join(", ");
+      };
+      c.appendChild(p);
+    });
+  }
+
+  // ---------- Storytelling ----------
+  let selKanal="Instagram";
+  let selLaenge="kurz";
+  let selStKurs=null;
+  let selIgKurs=null;
+
+  function initPills(groupId, onSelect){
+    document.getElementById(groupId).querySelectorAll(".pill").forEach(p=>{
+      p.onclick=()=>{
+        document.getElementById(groupId).querySelectorAll(".pill").forEach(x=>x.classList.remove("on"));
+        p.classList.add("on");
+        onSelect(p.dataset.v);
+      };
+    });
+  }
+  initPills("kanal-pills", v=>{ selKanal=v; });
+  initPills("laenge-pills", v=>{ selLaenge=v; });
+
+  renderKursPills("st-kurs-pills", async(kurs)=>{
+    selStKurs=kurs;
+    ["st-desc-field","st-ideen-field","st-kanal-field","st-laenge-field"].forEach(id=>{ document.getElementById(id).style.display="block"; });
+    document.getElementById("genStory").style.display="inline-block";
+    document.getElementById("storyResult").innerHTML="";
+    document.getElementById("st-ergebnis").value="";
+    genKursbeschreibung(kurs.name, kurs.module, "st-kurs-desc");
+    genKundenIdeen(kurs.name);
+  });
+
+  initMic("mic-st-desc","st-kurs-desc",false);
+  initMic("mic-st-ergebnis","st-ergebnis",false);
+
+  renderKursPills("ig-kurs-pills", async(kurs)=>{
+    selIgKurs=kurs;
+    document.getElementById("ig-details").style.display="block";
+    document.getElementById("genInsta").style.display="inline-block";
+    document.getElementById("instaResult").innerHTML="";
+    document.getElementById("ig-module").value="";
+    renderModulPills(kurs.module);
+    genKursbeschreibung(kurs.name, kurs.module, "ig-desc");
+  });
+
+  initMic("mic-ig-desc","ig-desc",false);
+  initMic("mic-ig-module","ig-module",true);
+
+  document.getElementById("genStory").onclick=generateStory;
+
+  async function generateStory(){
+    if(!selStKurs) return;
+    readBrainFromForm();
+    const desc=document.getElementById("st-kurs-desc").value.trim();
+    const ergebnis=document.getElementById("st-ergebnis").value.trim();
+    const st=document.getElementById("storyStatus");
+    document.getElementById("genStory").disabled=true;
+    st.className="status work"; st.innerHTML='<span class="spin"></span>Ich schreibe dein Storytelling …';
+    document.getElementById("storyResult").innerHTML="";
+
+    const laengeHinweis = selLaenge==="kurz"
+      ? "Kundenstimme: 4-6 Saetze. Expertentext: 5-7 Saetze."
+      : selLaenge==="mittel"
+      ? "Kundenstimme: 8-12 Saetze. Expertentext: 10-14 Saetze."
+      : "Kundenstimme: 15-20 Saetze. Expertentext: 18-25 Saetze.";
+
+    const prompt="Du schreibst Marketing-Storytelling fuer "+brain.name+", eine systemische Coach. Ton: "+(brain.tone||"warm, vertrauenswuerdig, ermutigend")+". Kurs: "+selStKurs.name+". Beschreibung: "+desc+(ergebnis?". Kundensituation: "+ergebnis:"")+". Kanal: "+selKanal+". Laenge: "+laengeHinweis+". 1. KUNDENSTIMME: Ich-Perspektive, fiktive Teilnehmerin (weiblich, 45-60 J.), VOR/Wandel/NACH, authentisch, keine Klischees. 2. EXPERTENTEXT: Tanja Sattelberg 3. Person, Haltung, Einzigartigkeit. JSON (keine Backticks): {\"kundenstimme\":\"\",\"expertentext\":\"\",\"hashtags\":[\"\"],\"cta\":\"\"}. 5 Hashtags fuer "+selKanal+".";
+
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+      const data=await res.json();
+      const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+      renderStory(JSON.parse(text.replace(/```json/gi,"").replace(/```/g,"").trim()));
+      st.className="status"; st.textContent="";
+    }catch(e){
+      st.className="status err"; st.textContent="Das hat nicht geklappt. Bitte erneut versuchen.";
+    }finally{ document.getElementById("genStory").disabled=false; }
+  }
+
+  function renderStory(s){
+    const r=document.getElementById("storyResult");
+    const hashtags=(s.hashtags||[]).map(h=>h.startsWith("#")?h:"#"+h).join(" ");
+    function storyBox(label, text){
+      const id="copy-"+Math.random().toString(36).slice(2,7);
+      return `<div class="format-section"><div class="format-label">${label}</div><div class="story-out" id="${id}-box"><button class="copy-btn" onclick="(function(b){navigator.clipboard.writeText(document.getElementById('${id}-box').innerText.replace('Kopieren','').trim()).then(function(){b.textContent='Kopiert \u2713';setTimeout(function(){b.textContent='Kopieren';},1800);})})(this)">Kopieren</button>${esc(text)}</div></div>`;
+    }
+    r.innerHTML=`<div class="box"><h2 style="margin-bottom:4px;">Dein Storytelling</h2><p class="sub" style="margin-bottom:18px;">Kurs: <b>${esc(selStKurs.name)}</b> &middot; ${esc(selKanal)} &middot; ${selLaenge==="kurz"?"Kurz":selLaenge==="mittel"?"Mittel":"Lang"}</p>${storyBox("Kundenstimme – Erfahrungsbericht",s.kundenstimme||"")}${storyBox("Expertentext – wer ist Tanja Sattelberg?",s.expertentext||"")}${hashtags?`<div class="format-section"><div class="format-label">Hashtags</div><div class="story-out">${esc(hashtags)}</div></div>`:""}${s.cta?`<div class="format-section"><div class="format-label">Call to Action</div><div class="story-out">${esc(s.cta)}</div></div>`:""}</div>`;
+  }
+
+  // ---------- Instagram-System ----------
+  document.getElementById("genInsta").onclick=generateInsta;
+
+  async function generateInsta(){
+    if(!selIgKurs) return;
+    readBrainFromForm();
+    const desc=document.getElementById("ig-desc").value.trim();
+    const module=document.getElementById("ig-module").value.trim()||selIgKurs.module.join(", ");
+    const st=document.getElementById("instaStatus");
+    document.getElementById("genInsta").disabled=true;
+    st.className="status work"; st.innerHTML='<span class="spin"></span>Ich erstelle dein Content-Paket …';
+    document.getElementById("instaResult").innerHTML="";
+
+    const prompt="Erstelle ein Content- und Marketing-Paket fuer Instagram und eine E-Mail-Serie. Ersteller: "+brain.name+". Ton: "+(brain.tone||"warm, vertrauenswuerdig")+". Evidenzbasiert, keine Heilversprechen. Sprache: Deutsch. ALGORITHMUS 2026: Sends (DM) staerkstes Signal, Saves bei Lerninhalten schwer, erste 3 Sek. entscheidend, Reels 7-90 Sek., Caption-SEO, Karussells fuer Lerninhalte. KURS: "+selIgKurs.name+(desc?". Beschreibung: "+desc:"")+". Module: "+module+". JSON (keine Backticks): {\"contentIdeen\":[{\"format\":\"\",\"idee\":\"\",\"caption\":\"\",\"signal\":\"\"}],\"reels\":[{\"konzept\":\"\",\"hook\":\"\",\"dauer\":\"\",\"cta\":\"\"}],\"hooks\":[\"\",\"\",\"\"],\"emailserie\":[{\"betreff\":\"\",\"ziel\":\"\",\"inhalt\":\"\"}]}. Genau 3 Hooks. 4 Content-Ideen. 3 Reels. 4 E-Mails. Caption: 2-3 Saetze fertig formuliert.";
+
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+      const data=await res.json();
+      const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+      renderInsta(JSON.parse(text.replace(/```json/gi,"").replace(/```/g,"").trim()));
+      st.className="status"; st.textContent="";
+    }catch(e){
+      st.className="status err"; st.textContent="Das hat nicht geklappt. Bitte erneut versuchen.";
+    }finally{ document.getElementById("genInsta").disabled=false; }
+  }
+
+  function copyText(text, btn){
+    navigator.clipboard.writeText(text).then(()=>{
+      const orig=btn.textContent; btn.textContent="Kopiert \u2713";
+      setTimeout(()=>{ btn.textContent=orig; },1800);
+    });
+  }
+
+  function renderInsta(pkg){
+    const r=document.getElementById("instaResult");
+    let html=`<div class="box"><h2 style="margin-bottom:4px;">Dein Content-Paket</h2><p class="sub" style="margin-bottom:0;">Kurs: <b>${esc(selIgKurs.name)}</b> – alle Texte kopierbar.</p>`;
+
+    const hooks=(pkg.hooks||[]).filter(Boolean);
+    if(hooks.length){
+      html+=`<div class="section-title">3 Hooks fuer die ersten 3 Sekunden</div>`;
+      hooks.forEach((h,i)=>{
+        const bid="hk"+i+Math.random().toString(36).slice(2,5);
+        html+=`<div class="hook-item" id="${bid}">${esc(h)}<button class="copy-btn" data-copy="${bid}">Kopieren</button></div>`;
+      });
+    }
+
+    const ideen=(pkg.contentIdeen||[]).filter(Boolean);
+    if(ideen.length){
+      html+=`<div class="section-title">Content-Ideen</div><div class="insta-grid">`;
+      ideen.forEach((c,i)=>{
+        const bid="ci"+i+Math.random().toString(36).slice(2,5);
+        html+=`<div class="insta-card" id="${bid}"><button class="copy-btn" data-copy="${bid}">Kopieren</button><div class="ic-label">${esc(c.format||"Idee")}</div><div class="ic-text">${esc(c.idee||"")}</div>${c.caption?`<div style="font-size:.85rem;color:var(--muted);margin-top:8px;line-height:1.5;border-top:1px solid var(--line);padding-top:8px;">${esc(c.caption)}</div>`:""}${c.signal?`<div class="ic-signal">Signal: ${esc(c.signal)}</div>`:""}</div>`;
+      });
+      html+=`</div>`;
+    }
+
+    const reels=(pkg.reels||[]).filter(Boolean);
+    if(reels.length){
+      html+=`<div class="section-title">Reel-Konzepte</div>`;
+      reels.forEach((re,i)=>{
+        const ct=encodeURIComponent("Konzept: "+(re.konzept||"")+"\nHook: "+(re.hook||"")+"\nDauer: "+(re.dauer||"")+"\nCTA: "+(re.cta||""));
+        html+=`<div class="email-item"><div class="ei-nr">Reel ${i+1} &middot; ${esc(re.dauer||"")}</div><div class="ei-betreff">${esc(re.konzept||"")}</div><div class="ei-ziel">Hook: ${esc(re.hook||"")}</div>${re.cta?`<div class="ei-inhalt">CTA: ${esc(re.cta)}</div>`:""}<button class="copy-btn" style="margin-top:8px;position:static;" data-copytext="${ct}">Kopieren</button></div>`;
+      });
+    }
+
+    const emails=(pkg.emailserie||[]).filter(Boolean);
+    if(emails.length){
+      html+=`<div class="section-title">E-Mail-Serie (${emails.length} Mails)</div>`;
+      emails.forEach((m,i)=>{
+        const ct=encodeURIComponent("Betreff: "+(m.betreff||"")+"\nZiel: "+(m.ziel||"")+"\nInhalt: "+(m.inhalt||""));
+        html+=`<div class="email-item"><div class="ei-nr">Mail ${i+1}</div><div class="ei-betreff">${esc(m.betreff||"")}</div><div class="ei-ziel">${esc(m.ziel||"")}</div><div class="ei-inhalt">${esc(m.inhalt||"")}</div><button class="copy-btn" style="margin-top:8px;position:static;" data-copytext="${ct}">Kopieren</button></div>`;
+      });
+    }
+
+    html+="</div>";
+    r.innerHTML=html;
+
+    r.querySelectorAll(".copy-btn[data-copy]").forEach(btn=>{
+      btn.onclick=()=>{ const box=document.getElementById(btn.dataset.copy); if(box) copyText(box.innerText.replace("Kopieren","").trim(),btn); };
+    });
+    r.querySelectorAll(".copy-btn[data-copytext]").forEach(btn=>{
+      btn.onclick=()=>{ copyText(decodeURIComponent(btn.dataset.copytext),btn); };
+    });
+  }
+
+  // init
+  loadBrain();
+})();
+</script>
+</body>
+</html>
